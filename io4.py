@@ -31,7 +31,7 @@ def addObrabotka(a, b, c):
 
 # генерируем челов
 stream = [[0, True]]
-for i in range(5):
+for i in range(12):
     stream.append([stream[len(stream) - 1][0] + rand(l, k), True])
 
 # queue.append(1)
@@ -40,6 +40,7 @@ obrabotka = [[0, stream[1][0]]]  # при отрисовки делитнуть 
 queue = [stream[1]]  # первый чел в очереди это чел, которого мы обрабатываем
 si = 1
 while True:
+    # проверка начинать с предыдущего интервала или ждать следующего
     if obrabotka[len(obrabotka) - 1][1] < queue[0][0]:
         obrabotka.append([queue[0][0],
                           queue[0][0] + random.expovariate(mu)])  # обрабатываем текущего чела
@@ -49,7 +50,6 @@ while True:
     del queue[0]  # чела обслужили
     while True:  # смотрим всех челов, что пришли до конца последней обработки и добавляем в очередь
         if si > len(stream) - 2:
-            print("queue", len(queue))
             break
         if stream[si + 1][0] < obrabotka[len(obrabotka) - 1][1]:
             if len(queue) >= m + 1:
@@ -60,7 +60,7 @@ while True:
         else:
             break
     if si > len(stream) - 2:
-        print("queue", len(queue))
+        # print("queue", len(queue))
         break
     if len(queue) <= 0:  # если в очереди никого нет, добавляем в обработку некст чела
         si += 1
@@ -70,6 +70,15 @@ for i in queue:
     obrabotka.append([obrabotka[len(obrabotka) - 1][1],
                       obrabotka[len(obrabotka) - 1][1] + random.expovariate(mu)])  # обрабатываем текущего чела
 queue = []
+
+
+# считаем
+kolSuccess = 0
+for i in stream:
+    if i[1]:
+        kolSuccess += 1
+print("Относительная пропускная способность: ", (kolSuccess-1) / (len(stream)-1))
+print("Абсолютная пропускная способность", (len(obrabotka)-1)/(obrabotka[len(obrabotka)-1][1] - obrabotka[0][1]))
 
 
 # Отрисовка
