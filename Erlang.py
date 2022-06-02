@@ -1,7 +1,7 @@
 global seed
 import random
 
-random.seed(1)
+random.seed(19) # 19
 
 def rand(l, k):
     s = 0

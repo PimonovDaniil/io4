@@ -19,6 +19,7 @@ def addStream(a, b, c):
         plt.plot([a, (b + a) / 2], [0, 1], color='red')
         plt.plot([(b + a) / 2, b], [1, 0], color='red')
 
+
 def addObrabotka(a, b, c):
     if c:
         plt.plot([a, (b + a) / 2], [-2, -1], color='blue')
@@ -38,21 +39,23 @@ for i in range(5):
 obrabotka = [[0, stream[1][0]]]  # при отрисовки делитнуть первый элемент
 queue = [stream[1]]  # первый чел в очереди это чел, которого мы обрабатываем
 si = 1
-i = 0
 while True:
-    i += 1
-    obrabotka.append([obrabotka[len(obrabotka) - 1][1],
-                      obrabotka[len(obrabotka) - 1][1] + random.expovariate(mu)])  # обрабатываем текущего чела
+    if obrabotka[len(obrabotka) - 1][1] < queue[0][0]:
+        obrabotka.append([queue[0][0],
+                          queue[0][0] + random.expovariate(mu)])  # обрабатываем текущего чела
+    else:
+        obrabotka.append([obrabotka[len(obrabotka) - 1][1],
+                          obrabotka[len(obrabotka) - 1][1] + random.expovariate(mu)])  # обрабатываем текущего чела
     del queue[0]  # чела обслужили
     while True:  # смотрим всех челов, что пришли до конца последней обработки и добавляем в очередь
         if si > len(stream) - 2:
             print("queue", len(queue))
             break
-        if stream[si+1][0] < obrabotka[len(obrabotka) - 1][1]:
+        if stream[si + 1][0] < obrabotka[len(obrabotka) - 1][1]:
             if len(queue) >= m + 1:
-                stream[si+1][1] = False
+                stream[si + 1][1] = False
             else:
-                queue.append(stream[si+1])
+                queue.append(stream[si + 1])
             si += 1
         else:
             break
@@ -62,15 +65,19 @@ while True:
     if len(queue) <= 0:  # если в очереди никого нет, добавляем в обработку некст чела
         si += 1
         queue.append(stream[si])
-# TODO Если остались челы в очереди, то их фигачить
+# Если остались челы в очереди, то их дообработать
+for i in queue:
+    obrabotka.append([obrabotka[len(obrabotka) - 1][1],
+                      obrabotka[len(obrabotka) - 1][1] + random.expovariate(mu)])  # обрабатываем текущего чела
+queue = []
 
 
 # Отрисовка
-for i in range(1, len(stream)): # рисуем stream
+for i in range(1, len(stream)):  # рисуем stream
     addStream(stream[i - 1][0], stream[i][0], stream[i][1])
 
 del obrabotka[0]
-for i in range(len(obrabotka)): # рисуем stream
+for i in range(len(obrabotka)):  # рисуем stream
     addObrabotka(obrabotka[i][0], obrabotka[i][1], True)
 
 plt.ylim([-10, 10])
