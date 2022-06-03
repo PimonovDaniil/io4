@@ -116,9 +116,24 @@ print("Абсолютная пропускная способность:\t",
 print("Cредняя интенсивность потока заявок:\t",
       (len(stream) - 1) / (obrabotka[len(obrabotka) - 1][1] - obrabotka[0][1]), "; СКП:\t", math.sqrt(
         ((obrabotka[len(obrabotka) - 1][1] - obrabotka[0][1]) - (len(stream) - 1)) / (
-                    (obrabotka[len(obrabotka) - 1][1] - obrabotka[0][1]) * (len(stream) - 1))))
+                (obrabotka[len(obrabotka) - 1][1] - obrabotka[0][1]) * (len(stream) - 1))))
 print("Покинувшие СМО:\t", leaveStream)
+kolChelov = 0
+Times = 0
+for i in range(1, len(state)):  # рисуем нагруженность
+    if state[i - 1][1] > 1:
+        Times += ((state[i][0] - state[i - 1][0]) * (state[i - 1][1] - 1))
+        kolChelov += (state[i - 1][1] - 1)
+print("Cреднее время ожидания в очереди: ", Times / kolChelov, "; СКП:\t",
+      math.sqrt((Times - kolChelov) / (kolChelov * Times)))
+exitIntervalTime = 0
+k = 0
+for i in range(1, len(obrabotka) - 1):
+    k += 1
+    exitIntervalTime += (obrabotka[i + 1][1] - obrabotka[i][1])
 
+print("средний интервал времени между событиями выходного потока: ", exitIntervalTime / k, "; СКП:\t",
+      math.sqrt((exitIntervalTime - k) / (exitIntervalTime * k)))
 # Отрисовка
 for i in range(1, len(stream)):  # рисуем stream
     addStream(stream[i - 1][0], stream[i][0], stream[i][1])
