@@ -10,7 +10,7 @@ n = 2  # кол-во обработчиков
 k = 2  # порядок экланга
 l = 0.9  # (лямбда) интенсивность потока
 mu = 0.3  # (мю) интенсивность обработчика
-kolEvents = 20000
+kolEvents = 20
 
 def addStream(a, b, c):
     if c:
@@ -141,14 +141,15 @@ print("Cредняя интенсивность потока заявок:\t",
       (len(stream) - 1) / (obrabotka[len(obrabotka) - 1][1] - obrabotka[0][1]), "; СКП:\t", math.sqrt(
         ((obrabotka[len(obrabotka) - 1][1] - obrabotka[0][1]) - (len(stream) - 1)) / (
                 (obrabotka[len(obrabotka) - 1][1] - obrabotka[0][1]) * (len(stream) - 1))))
-# kolChelov = 0
-# Times = 0
-# for i in range(1, len(state)):
-#     if state[i - 1][1] > 1:
-#         Times += ((state[i][0] - state[i - 1][0]) * (state[i - 1][1] - 1))
-#         kolChelov += (state[i - 1][1] - 1)
-print("Cреднее время ожидания в очереди: ", m / l, "; СКП:\t",
-      math.sqrt((m - l) / (m*l)))
+kolChelov = 0
+Times = 0
+for i in range(1, len(state)):  # рисуем нагруженность
+    if state[i - 1][1] > 2:
+        Times += ((state[i][0] - state[i - 1][0]) * (state[i - 1][1] - 2))
+        kolChelov += (state[i - 1][1] - 2)
+
+print("Cреднее время ожидания в очереди: ", Times / kolChelov, "; СКП:\t",
+      math.sqrt((abs(Times - kolChelov)) / (kolChelov * Times)))
 exitIntervalTime = 0
 massIntervalKol = [0]*30
 k = 0
