@@ -86,23 +86,6 @@ for i in queue:
 queue = []
 
 
-# считаем
-kolSuccess = 0
-for i in stream:
-    if i[1]:
-        kolSuccess += 1
-print("Относительная пропускная способность:\t", (kolSuccess-1) / (len(stream)-1))
-print("Абсолютная пропускная способность:\t", (len(obrabotka)-1)/(obrabotka[len(obrabotka)-1][1] - obrabotka[0][1]))
-
-
-# Отрисовка
-for i in range(1, len(stream)):  # рисуем stream
-    addStream(stream[i - 1][0], stream[i][0], stream[i][1])
-
-del obrabotka[0]
-for i in range(len(obrabotka)):  # рисуем stream
-    addObrabotka(obrabotka[i][0], obrabotka[i][1], True)
-
 flag = True
 while flag:
     flag = False
@@ -110,8 +93,26 @@ while flag:
         if state[i][0] > state[i+1][0]:
             state[i], state[i+1] = state[i+1], state[i]
             flag = True
-for i in range(1, len(state)):
-    addState(state[i-1][0], state[i][0], state[i-1][1])
+
+# считаем
+kolSuccess = 0
+for i in stream:
+    if i[1]:
+        kolSuccess += 1
+print("Относительная пропускная способность:\t", (kolSuccess-1) / (len(stream)-1))
+print("Абсолютная пропускная способность:\t", (len(obrabotka)-1)/(obrabotka[len(obrabotka)-1][1] - obrabotka[0][1]))
+print("Cредняя интенсивность потока заявок:\t", (len(stream)-1)/(obrabotka[len(obrabotka)-1][1] - obrabotka[0][1]))
+
+# Отрисовка
+for i in range(1, len(stream)):  # рисуем stream
+    addStream(stream[i - 1][0], stream[i][0], stream[i][1])
+
+del obrabotka[0]
+for i in range(len(obrabotka)):  # рисуем обработку
+    addObrabotka(obrabotka[i][0], obrabotka[i][1], True)
+
+for i in range(1, len(state)): # рисуем нагруженность
+    addState(state[i-1][0], state[i][0], state[i][1])
 
 plt.ylim([-10, 10])
 matplotlib.pyplot.show()
