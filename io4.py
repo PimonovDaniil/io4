@@ -55,7 +55,9 @@ while True:
     else:
         obrabotka.append([obrabotka[len(obrabotka) - 1][1],
                           obrabotka[len(obrabotka) - 1][1] + random.expovariate(mu)])  # обрабатываем текущего чела
+    state.append([obrabotka[len(obrabotka) - 1][0], len(queue)])
     del queue[0]  # чела обслужили
+    state.append([obrabotka[len(obrabotka) - 1][1], len(queue)])
     while True:  # смотрим всех челов, что пришли до конца последней обработки и добавляем в очередь
         if si > len(stream) - 2:
             break
@@ -68,24 +70,27 @@ while True:
             si += 1
         else:
             break
-    state.append([obrabotka[len(obrabotka) - 1][1], len(queue)])
     if si > len(stream) - 2:
         # print("queue", len(queue))
         break
     if len(queue) <= 0:  # если в очереди никого нет, добавляем в обработку некст чела
         si += 1
-        state.append([stream[si + 1][0], len(queue)])
         queue.append(stream[si])
+        state.append([stream[si + 1][0], len(queue)])
 # Если остались челы в очереди, то их дообработать
 j = 0
 for i in queue:
-    j += 1
     obrabotka.append([obrabotka[len(obrabotka) - 1][1],
                       obrabotka[len(obrabotka) - 1][1] + random.expovariate(mu)])  # обрабатываем текущего чела
-    state.append([obrabotka[len(obrabotka) - 1][1], len(queue) - j])
+    state.append([obrabotka[len(obrabotka) - 1][0], len(queue) - j])
+    j += 1
+state.append([obrabotka[len(obrabotka) - 1][1], 1])
 queue = []
 
-
+# for i in range(len(obrabotka)-1):
+#     if abs(obrabotka[i][1] - obrabotka[i+1][0]) < 0.01:
+#         state.append([obrabotka[i][1], 0])
+#         print(i)
 flag = True
 while flag:
     flag = False
@@ -93,7 +98,7 @@ while flag:
         if state[i][0] > state[i+1][0]:
             state[i], state[i+1] = state[i+1], state[i]
             flag = True
-
+print(state)
 # считаем
 kolSuccess = 0
 for i in stream:
@@ -112,7 +117,7 @@ for i in range(len(obrabotka)):  # рисуем обработку
     addObrabotka(obrabotka[i][0], obrabotka[i][1], True)
 
 for i in range(1, len(state)): # рисуем нагруженность
-    addState(state[i-1][0], state[i][0], state[i][1])
+    addState(state[i-1][0], state[i][0], state[i-1][1])
 
 plt.ylim([-10, 10])
 matplotlib.pyplot.show()
