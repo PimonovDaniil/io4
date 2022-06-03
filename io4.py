@@ -3,13 +3,14 @@ import random
 import matplotlib
 import matplotlib.pyplot as plt
 from Erlang import *
+import seaborn as sns
 
 m = 2  # мест в очереди
 n = 3  # кол-во обработчиков
 k = 2  # порядок экланга
 l = 0.5  # (лямбда) интенсивность потока
 mu = 0.3  # (мю) интенсивность обработчика
-
+kolEvents = 12
 
 def addStream(a, b, c):
     if c:
@@ -42,7 +43,7 @@ def addState(a, b, c):
 
 # генерируем челов
 stream = [[0, True]]
-for i in range(12):
+for i in range(kolEvents):
     stream.append([stream[len(stream) - 1][0] + rand(l, k), True])
 
 obrabotka = [[0, stream[1][0]]]  # при отрисовки делитнуть первый элемент
@@ -117,7 +118,6 @@ print("Cредняя интенсивность потока заявок:\t",
       (len(stream) - 1) / (obrabotka[len(obrabotka) - 1][1] - obrabotka[0][1]), "; СКП:\t", math.sqrt(
         ((obrabotka[len(obrabotka) - 1][1] - obrabotka[0][1]) - (len(stream) - 1)) / (
                 (obrabotka[len(obrabotka) - 1][1] - obrabotka[0][1]) * (len(stream) - 1))))
-print("Покинувшие СМО:\t", leaveStream)
 kolChelov = 0
 Times = 0
 for i in range(1, len(state)):  # рисуем нагруженность
@@ -127,14 +127,34 @@ for i in range(1, len(state)):  # рисуем нагруженность
 print("Cреднее время ожидания в очереди: ", Times / kolChelov, "; СКП:\t",
       math.sqrt((Times - kolChelov) / (kolChelov * Times)))
 exitIntervalTime = 0
+massIntervalKol = [0]*30
 k = 0
 for i in range(1, len(obrabotka) - 1):
     k += 1
+    for j in range(30):
+        if (obrabotka[i + 1][1] - obrabotka[i][1]) < j:
+            massIntervalKol[j] += 1
+            break
     exitIntervalTime += (obrabotka[i + 1][1] - obrabotka[i][1])
 
 print("средний интервал времени между событиями выходного потока: ", exitIntervalTime / k, "; СКП:\t",
       math.sqrt((exitIntervalTime - k) / (exitIntervalTime * k)))
+print("Покинувшие СМО:\t", leaveStream)
+
+sp = [0, 0, 0, 0]
+for i in range(1, len(state)):
+    sp[state[i - 1][1]] += (state[i][0]-state[i - 1][0])
+print("Вероятность всех свободных автоматов: ", sp[0]/(obrabotka[len(obrabotka) - 1][1] - obrabotka[0][1]))
+print("Вероятность ситуации обслуживания одного клиента: ", sp[1]/(obrabotka[len(obrabotka) - 1][1] - obrabotka[0][1]))
+print("Вероятность ситуации обслуживания одного клиента и 1 в очереди: ", sp[2]/(obrabotka[len(obrabotka) - 1][1] - obrabotka[0][1]))
+print("Вероятность ситуации обслуживания одного клиента и 2 в очереди: ", sp[3]/(obrabotka[len(obrabotka) - 1][1] - obrabotka[0][1]))
+
+
 # Отрисовка
+del massIntervalKol[0]
+sns.barplot(x=list(range(29)), y=massIntervalKol)
+matplotlib.pyplot.show()
+
 for i in range(1, len(stream)):  # рисуем stream
     addStream(stream[i - 1][0], stream[i][0], stream[i][1])
 
@@ -147,3 +167,5 @@ for i in range(1, len(state)):  # рисуем нагруженность
 
 plt.ylim([-10, 10])
 matplotlib.pyplot.show()
+
+
